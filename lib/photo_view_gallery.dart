@@ -1,6 +1,7 @@
 library photo_view_gallery;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:photo_view/photo_view.dart'
     show
@@ -233,6 +234,7 @@ class _PhotoViewGalleryState extends State<PhotoViewGallery> {
     return PhotoViewGestureDetectorScope(
       axis: widget.scrollDirection,
       child: PageView.builder(
+        dragStartBehavior: DragStartBehavior.down,
         reverse: widget.reverse,
         controller: _controller,
         onPageChanged: widget.onPageChanged,

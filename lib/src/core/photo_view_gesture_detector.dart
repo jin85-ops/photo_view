@@ -1,4 +1,5 @@
 import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import 'photo_view_hit_corners.dart';
@@ -146,7 +147,27 @@ class PhotoViewGestureRecognizer extends ScaleGestureRecognizer {
         count > 0 ? focalPoint / count.toDouble() : Offset.zero;
   }
 
+  bool get _fittedSinglePointer {
+    if (validateAxis == null ||
+        hitDetector == null ||
+        _pointerLocations.length != 1) return false;
+    final bounds = hitDetector!.scaleBoundaries;
+    final child = bounds.childSize * hitDetector!.scale;
+    return child.width <= bounds.outerSize.width + precisionErrorTolerance &&
+        child.height <= bounds.outerSize.height + precisionErrorTolerance;
+  }
+
+  @override
+  void resolve(GestureDisposition disposition) {
+    if (disposition == GestureDisposition.accepted && _fittedSinglePointer) {
+      super.resolve(GestureDisposition.rejected);
+      return;
+    }
+    super.resolve(disposition);
+  }
+
   void _decideIfWeAcceptEvent(PointerEvent event) {
+    if (_fittedSinglePointer) return;
     if (!(event is PointerMoveEvent)) {
       return;
     }
